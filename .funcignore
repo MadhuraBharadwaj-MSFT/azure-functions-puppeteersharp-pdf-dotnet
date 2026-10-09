@@ -1,0 +1,11 @@
+.git*
+.vscode
+.azure
+infra
+local.settings.json
+samples
+scripts
+tests
+**/bin
+**/obj
+*.md

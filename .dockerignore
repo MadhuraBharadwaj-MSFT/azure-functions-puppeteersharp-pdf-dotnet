@@ -1,0 +1,13 @@
+.azure
+.git
+.gitignore
+.vscode
+infra
+samples
+scripts
+tests
+**/bin
+**/obj
+**/TestResults
+*.md
+local.settings.json
