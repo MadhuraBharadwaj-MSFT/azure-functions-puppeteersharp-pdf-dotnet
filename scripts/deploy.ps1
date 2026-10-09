@@ -63,39 +63,14 @@ if ($LASTEXITCODE -ne 0) {
     throw 'Failed to enable ACR ARM-audience authentication.'
 }
 
-$runId = az acr build `
+az acr build `
     --registry $registryName `
     --image "$ImageRepository`:$ImageTag" `
     $repoRoot `
     --no-logs `
-    --no-wait `
-    --query runId `
-    --output tsv `
-    --only-show-errors
+    --only-show-errors | Out-Null
 if ($LASTEXITCODE -ne 0) {
-    throw 'Failed to queue the ACR cloud image build.'
-}
-
-$buildStatus = $null
-for ($attempt = 1; $attempt -le 60; $attempt++) {
-    $buildStatus = az acr task show-run `
-        --registry $registryName `
-        --run-id $runId `
-        --query status `
-        --output tsv `
-        --only-show-errors
-    if ($LASTEXITCODE -ne 0) {
-        throw "Failed to read ACR build status for run '$runId'."
-    }
-    if ($buildStatus -in @('Succeeded', 'Failed', 'Canceled', 'Error')) {
-        break
-    }
-
-    Start-Sleep -Seconds 10
-}
-
-if ($buildStatus -ne 'Succeeded') {
-    throw "ACR cloud image build '$runId' finished with status '$buildStatus'."
+    throw 'ACR cloud image build failed.'
 }
 
 az functionapp config container set `
